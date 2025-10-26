@@ -1,0 +1,107 @@
+╔══════════════════════════════════════════════════════════════════╗
+║                K3s on Oracle Linux 9 ARM64                       ║
+║                    Quick Reference Guide                         ║
+╚══════════════════════════════════════════════════════════════════╝
+
+📋 SYSTEM VERIFIED:
+  ✓ Architecture: ARM64 (aarch64)
+  ✓ OS: Oracle Linux Server 9.6
+  ✓ Kernel: 4K pages (required for ARM64)
+  ✓ Memory: 22GB available
+  ✓ Disk: 139GB available at /mnt/data
+  ⚠ SELinux: Enforcing (auto-configured during install)
+  ⚠ Firewalld: Active (auto-configured during install)
+
+⚠️  WARNINGS EXPLAINED:
+  The two warnings are EXPECTED and automatically handled:
+  
+  1. SELinux Enforcing → K3s SELinux policies will be installed
+  2. Firewalld Active → Required ports will be opened
+  
+  These are normal for Oracle Linux 9 and ensure security!
+
+📁 DATA LOCATION:
+  K3s data directory: /mnt/data/k3s
+  (Similar to your Podman setup at /mnt/data/podman)
+
+🚀 INSTALLATION STEPS:
+
+1. Check requirements:
+   $ /mnt/data/scripts/k3s/check-requirements.sh
+
+2. Install K3s:
+   $ /mnt/data/scripts/k3s/install.sh
+   
+   This will automatically:
+   - Install SELinux policies for K3s
+   - Configure firewall rules (port 6443, pod/service CIDRs)
+   - Install K3s with data dir at /mnt/data/k3s
+   - Setup kubectl for current user (no sudo needed)
+   - Install Helm 3 package manager
+   - Add common Helm repos (stable, bitnami)
+   - Verify cluster is ready
+
+3. Check status:
+   $ /mnt/data/scripts/k3s/status.sh
+
+4. Start using Kubernetes:
+   $ kubectl get nodes
+   $ kubectl get pods -A
+   $ helm search repo nginx
+
+🔧 WHAT WILL BE INSTALLED:
+
+SELinux Packages:
+  - container-selinux
+  - selinux-policy-base
+  - k3s-selinux-1.6-1.el9.noarch.rpm
+
+Firewall Rules:
+  - Port 6443/tcp (API server)
+  - Zone trusted: 10.42.0.0/16 (pods)
+  - Zone trusted: 10.43.0.0/16 (services)
+
+K3s Components:
+  - K3s binary at /usr/local/bin/k3s
+  - Systemd service: k3s.service
+  - kubectl (configured for your user)
+  - Helm 3 package manager
+  - crictl, ctr commands
+  - Containerd runtime
+  - Flannel CNI
+  - CoreDNS, Traefik, Local-path-provisioner
+
+Helm Repositories:
+  - stable (https://charts.helm.sh/stable)
+  - bitnami (https://charts.bitnami.com/bitnami)
+
+📊 RESOURCE USAGE:
+  - Minimal footprint: ~500MB RAM base
+  - All data in /mnt/data/k3s
+  - Production-ready certified Kubernetes
+
+📖 USEFUL COMMANDS AFTER INSTALL:
+
+  # No sudo needed - kubectl is configured for your user!
+  kubectl cluster-info
+  kubectl get nodes
+  kubectl get pods -A
+  kubectl get all -A
+  
+  # Use Helm to deploy apps
+  helm search repo wordpress
+  helm install my-wordpress bitnami/wordpress
+  helm list
+  
+  # Monitor cluster
+  kubectl top nodes    # Requires metrics-server
+  kubectl get events -A
+
+🔄 UNINSTALL:
+  $ /mnt/data/scripts/k3s/uninstall.sh
+
+📚 DOCUMENTATION:
+  Official K3s docs: https://docs.k3s.io
+  Oracle Linux: https://docs.oracle.com/en/operating-systems/oracle-linux/
+
+═══════════════════════════════════════════════════════════════════
